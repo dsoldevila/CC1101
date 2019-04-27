@@ -108,13 +108,15 @@ int main(void)
   printf("#####################\n\r");
   init_led();
   //Init rf driver
-  rf_begin(&hspi1, &huart3, GFSK_38_4_kb, MHz868);
+  rf_begin(&hspi1, &huart3, OOK_4_8_kb, MHz434);
 
 
   //check if idle
   uint8_t result = rf_read_register(MARCSTATE);
   printf("result %#02x\r\n", result);
 
+
+/**
   //check TXFIFO working
   result = rf_read_register(TXBYTES);
   printf("TXFIFO BEFORE %#02x\r\n", result);
@@ -122,6 +124,20 @@ int main(void)
   rf_write_data(TXFIFO, data, 6);
   result = rf_read_register(TXBYTES);
   printf("TX_FIFO AFTER %#02x\r\n", result);
+
+  transmit();
+  result = rf_read_register(TXBYTES);
+  printf("TX_FIFO AFTER %#02x\r\n", result);
+	**/
+  uint8_t data[6] = {0xA5,0xA5,0xA5,0xA5,0xA5,0xA5};
+  while(1){
+  rf_write_data(TXFIFO, data, 6);
+  transmit();
+  printf("hola\n\r");
+  while(rf_read_register(TXBYTES)!=0);
+  }
+
+
 
   /* USER CODE END 2 */
 

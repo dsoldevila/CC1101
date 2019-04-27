@@ -393,25 +393,25 @@ void rf_set_modulation_mode(MODULATION_TypeDef mode){
     switch (mode)
     {
         case GFSK_1_2_kb:
-        			cfg_reg = cc1100_GFSK_1_2_kb;   //sets up settings for GFSK 1,2 kbit mode/speed
+        			cfg_reg = cc1100_GFSK_1_2_kb;
                     break;
         case GFSK_38_4_kb:
-                    cfg_reg = cc1100_GFSK_38_4_kb;  //sets up settings for GFSK 38,4 kbit mode/speed
+                    cfg_reg = cc1100_GFSK_38_4_kb;
                     break;
         case GFSK_100_kb:
-        			cfg_reg = cc1100_GFSK_100_kb;   //sets up settings for GFSK 100 kbit mode/speed
+        			cfg_reg = cc1100_GFSK_100_kb;
                     break;
         case MSK_250_kb:
-        			cfg_reg = cc1100_MSK_250_kb;    //sets up settings for GFSK 38,4 kbit mode/speed
+        			cfg_reg = cc1100_MSK_250_kb;
                     break;
         case MSK_500_kb:
-        			cfg_reg = cc1100_MSK_500_kb;    //sets up settings for GFSK 38,4 kbit mode/speed
+        			cfg_reg = cc1100_MSK_500_kb;
                     break;
         case OOK_4_8_kb:
-        			cfg_reg = cc1100_OOK_4_8_kb;    //sets up settings for GFSK 38,4 kbit mode/speed
+        			cfg_reg = cc1100_OOK_4_8_kb;
                     break;
         default:
-        			cfg_reg = cc1100_GFSK_38_4_kb;  //sets up settings for GFSK 38,4 kbit mode/speed
+        			cfg_reg = cc1100_GFSK_38_4_kb;
                     break;
     }
 
@@ -432,7 +432,7 @@ void rf_set_ISMband(ISMBAND_TypeDef band){
                     freq0=0x89;
                     patable = patable_power_315;
                     break;
-        case MHz433:                                                          //433.92MHz
+        case MHz434:                                                          //433.92MHz
                     freq2=0x10;
                     freq1=0xB0;
                     freq0=0x71;
@@ -511,10 +511,11 @@ uint8_t transmit()
 
     marcstate = 0xFF;                     //set unknown/dummy state value
 
-    while(marcstate != 0x01)              //0x01 = ILDE after sending data
+    while(marcstate != IDLE)              //0x01 = ILDE after sending data
     {
-        marcstate = (rf_read_register(MARCSTATE) & 0x1F); //read out state of cc1100 to be sure in IDLE and TX is finished
+        marcstate = rf_read_register(MARCSTATE); //read out state of cc1100 to be sure in IDLE and TX is finished
     }
+
     tick = HAL_GetTick();
     while(HAL_GetTick()-tick<100);
     return TRUE;

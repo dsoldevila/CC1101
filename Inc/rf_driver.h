@@ -198,7 +198,7 @@ typedef enum{
 
 typedef enum{
 	MHz315 = 1,
-	MHz433,
+	MHz434,
 	MHz868,
 	MHz915,
 }ISMBAND_TypeDef;
