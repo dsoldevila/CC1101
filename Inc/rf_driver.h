@@ -7,6 +7,7 @@
 
 #ifndef RF_DRIVER_H_
 #define RF_DRIVER_H_
+#include <stdio.h>
 #ifndef __STM32F4xx_HAL_H
 #include "stm32f4xx_hal.h"
 #endif

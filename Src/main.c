@@ -21,7 +21,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "rf_driver.h"
@@ -104,6 +103,7 @@ int main(void)
   MX_SPI1_Init();
   MX_USART3_UART_Init();
   MX_USART2_UART_Init();
+
   /* USER CODE BEGIN 2 */
   printf("#####################\n\r");
   init_led();
@@ -115,29 +115,9 @@ int main(void)
   uint8_t result = rf_read_register(MARCSTATE);
   printf("result %#02x\r\n", result);
 
-
-/**
-  //check TXFIFO working
-  result = rf_read_register(TXBYTES);
-  printf("TXFIFO BEFORE %#02x\r\n", result);
-  uint8_t data[6] = {1,2,3,4,5,6};
-  rf_write_data(TXFIFO, data, 6);
-  result = rf_read_register(TXBYTES);
-  printf("TX_FIFO AFTER %#02x\r\n", result);
-
+  //uint8_t data[6] = {0xA5,0xA5,0xA5,0xA5,0xA5,0xA5};
+  //rf_write_data(TXFIFO, data, 6);
   transmit();
-  result = rf_read_register(TXBYTES);
-  printf("TX_FIFO AFTER %#02x\r\n", result);
-	**/
-  uint8_t data[6] = {0xA5,0xA5,0xA5,0xA5,0xA5,0xA5};
-  while(1){
-  rf_write_data(TXFIFO, data, 6);
-  transmit();
-  printf("hola\n\r");
-  while(rf_read_register(TXBYTES)!=0);
-  }
-
-
 
   /* USER CODE END 2 */
 
