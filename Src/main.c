@@ -115,10 +115,11 @@ int main(void)
   uint8_t result = rf_read_register(MARCSTATE);
   printf("result %#02x\r\n", result);
 
-  //uint8_t data[6] = {0xA5,0xA5,0xA5,0xA5,0xA5,0xA5};
-  //rf_write_data(TXFIFO, data, 6);
+  uint8_t data[6] = {0x07,0x07,0x07,0x07,0x07,0x07};
+  while(1){
+  rf_write_data(TXFIFO, data, 6);
   transmit();
-
+  }
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */

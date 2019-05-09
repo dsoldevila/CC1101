@@ -19,7 +19,7 @@ def get_bitstring(symbols):
         		bs += '1'
     		else:
         		bs += '0'
-	print bs
+	print(bs)
  
 def bits2bytes(bit_string):
 	return bitstring.BitArray(bin=str(bit_string.strip())).tobytes()
@@ -30,11 +30,11 @@ def xmit(bit_string):
 	except ChipconUsbTimeoutException:
 		pass
 	except:
-		print "Invalid bit string or xmit error"
+		print("Invalid bit string or xmit error")
 		sys.exit()
 
 if __name__=="__main__":
-	with open("sdr_test.data", 'rb') as infile:
+	with open(sys.argv[1], 'rb') as infile:
 		line="a"
 		data = np.fromfile(infile, np.float32)
 	

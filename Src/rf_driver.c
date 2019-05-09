@@ -511,7 +511,7 @@ uint8_t transmit()
 
     marcstate = 0xFF;                     //set unknown/dummy state value
 
-    while(marcstate != IDLE)              //0x01 = ILDE after sending data
+    while(marcstate != TXFIFO_UNDERFLOW)              //0x01 = ILDE after sending data
     {
         marcstate = rf_read_register(MARCSTATE); //read out state of cc1100 to be sure in IDLE and TX is finished
     }
