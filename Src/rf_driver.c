@@ -2,7 +2,8 @@
  * rf_driver.c
  *
  *  Created on: 29 mar. 2019
- *      Author: david
+ *      Author: dsoldevila
+ *      This code is based on the code made by SpaceTeddy (https://github.com/SpaceTeddy/CC1101)
  */
 //#define RF_DRIVER_H_
 #include "rf_driver.h"
@@ -268,7 +269,7 @@ const uint8_t cc1100_MSK_500_kb[] = {
                     0x0B   // TEST0         Various Test Settings
                 };
 
-const uint8_t cc1100_OOK_4_8_kb[] = {
+const uint8_t cc1100_OOK_4_8_kb[] = { //In fact it's 2.4Kb/s because of the Manhattan codification, see Datasheet.
                     0x06,  // IOCFG2        GDO2 Output Pin Configuration
                     0x2E,  // IOCFG1        GDO1 Output Pin Configuration
                     0x06,  // IOCFG0        GDO0 Output Pin Configuration
@@ -322,6 +323,7 @@ const uint8_t cc1100_OOK_4_8_kb[] = {
 /* Private user code ---------------------------------------------------------*/
 
 /* RF Driver -------------------------------------------------------------*/
+
 void rf_init_driver(SPI_HandleTypeDef* hspi, UART_HandleTypeDef* huart){
 	H.hspi = hspi;
 	H.huart = huart;
@@ -329,6 +331,10 @@ void rf_init_driver(SPI_HandleTypeDef* hspi, UART_HandleTypeDef* huart){
 
 
 void rf_reset(){
+	/**
+	 * @brief Turns on the RF chip with a specific sequence on the CS pin and A SRES command.
+	 * The former is only needed on a cold start.
+	 */
 	uint32_t tick;
 
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
@@ -347,6 +353,11 @@ void rf_reset(){
 
 
 uint8_t rf_begin(SPI_HandleTypeDef* hspi, UART_HandleTypeDef* huart, MODULATION_TypeDef mode, ISMBAND_TypeDef ism_band){
+	/**
+	 * @brief Calls all the functions needed to make the RF chip operative. This should be the first function used when
+	 * using the RF chip.
+	 *
+	 */
 	uint32_t tick;
 
 	rf_init_driver(hspi, huart);
@@ -374,6 +385,9 @@ uint8_t rf_begin(SPI_HandleTypeDef* hspi, UART_HandleTypeDef* huart, MODULATION_
 }
 
 uint8_t rf_check(){
+	/**
+	 * @brief Checks the version of the RF chip to check if everything is OK.
+	 */
 	uint8_t version;
 	version = rf_read_register(VERSION);
 	printf("VERSION==%#02x", version);
@@ -388,6 +402,7 @@ uint8_t rf_check(){
 }
 
 void rf_set_modulation_mode(MODULATION_TypeDef mode){
+
     const uint8_t* cfg_reg;
 
     switch (mode)
@@ -484,20 +499,20 @@ void rf_set_output_power_level(int8_t dBm)
 }
 
 
-uint8_t sidle()
-{
+uint8_t sidle(){
+	/**
+	 * @brief Set RF chip to idle state
+	 */
     uint8_t tick, marcstate;
 
     rf_write_strobe(SIDLE);              //sets to idle first. must be in
 
     marcstate = 0xFF;                     //set unknown/dummy state value
 
-    while(marcstate != 0x01)              //0x01 = sidle
+    while(marcstate != IDLE)              //0x01 = sidle
     {
         marcstate = (rf_read_register(MARCSTATE) & 0x1F); //read out state of cc1100 to be sure in RX
     }
-    tick = HAL_GetTick();
-    while(HAL_GetTick()-tick<100);
 
     return TRUE;
 }
@@ -513,11 +528,13 @@ uint8_t transmit()
 
     while(marcstate != TXFIFO_UNDERFLOW)              //0x01 = ILDE after sending data
     {
+    	//Els packets estan configrats amb longitud de 255 bytes, per això es posa en estat d'undeflow
+    	//Sinó está configurat perquè torni en estat IDLE
+    	//LLegir el nombre bytes del buffer, per modificar el packet length al fer el transmit, per evitar underflow
         marcstate = rf_read_register(MARCSTATE); //read out state of cc1100 to be sure in IDLE and TX is finished
     }
-
-    tick = HAL_GetTick();
-    while(HAL_GetTick()-tick<100);
+    //two status bytes will be appended to the payload of the
+    //packet. The status bytes contain RSSI and LQI values, as well as CRC OK.
     return TRUE;
 }
 

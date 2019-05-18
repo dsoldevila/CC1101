@@ -2,7 +2,8 @@
  * rf_driver.h
  *
  *  Created on: 29 mar. 2019
- *      Author: david
+ *      Author: dsoldevila
+ *      This code is based on the code made by SpaceTeddy (https://github.com/SpaceTeddy/CC1101)
  */
 
 #ifndef RF_DRIVER_H_
