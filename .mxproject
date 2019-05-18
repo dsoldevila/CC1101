@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=/home/david/Git/F446ZE/RF_driver/Inc
+HeaderPath=/home/david/Git/RF_driver/Inc
 HeaderFiles=FreeRTOSConfig.h;stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;
-SourcePath=/home/david/Git/F446ZE/RF_driver/Src
+SourcePath=/home/david/Git/RF_driver/Src
 SourceFiles=freertos.c;stm32f4xx_it.c;stm32f4xx_hal_msp.c;stm32f4xx_hal_timebase_tim.c;main.c;
 
 [PreviousLibFiles]
