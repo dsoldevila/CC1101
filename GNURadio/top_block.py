@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Top Block
-# Generated: Thu May  9 19:20:00 2019
+# Generated: Fri May 10 19:28:53 2019
 ##################################################
 
 from distutils.version import StrictVersion
@@ -66,10 +66,10 @@ class top_block(gr.top_block, Qt.QWidget):
         # Variables
         ##################################################
         self.samp_rate = samp_rate = 2048000
-        self.baud_rate_rounded = baud_rate_rounded = 4798
+        self.baud_rate_rounded = baud_rate_rounded = 2399
         self.zoom = zoom = 1024
         self.centre_freq = centre_freq = 433895e3
-        self.baud_rate = baud_rate = 4797.935486
+        self.baud_rate = baud_rate = 4797.935486/2
         self.N = N = samp_rate/baud_rate_rounded
 
         ##################################################

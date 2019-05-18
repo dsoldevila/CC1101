@@ -3,14 +3,9 @@ import sys, bitstring
 import numpy as np
  
 """
-def init(device):
-	device.setMdmModulation(MOD_ASK_OOK)
-	device.setFreq(433920000)
-	device.setMdmSyncMode(0x00)
-	device.setMdmNumPreamble(0)
-	device.setPktPQT(0)
-	device.setMaxPower()
-	device.setMdmDRate(2450)
+1010 1010 1010 1010 1010 1010 1010 1010 PREAMBLE
+0101 0111 0100 0011 SYNC WORD (x2)
+0000 0111 0000 0111 0000 0111 0000 0111 0000 0111 0000 0111 DATA (0x07 x7)
 """ 
 def get_bitstring(symbols):
 	bs = ''
