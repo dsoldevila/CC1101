@@ -34,12 +34,12 @@ const uint8_t patable_power_915[]  = {0x0B,0x1B,0x6D,0x67,0x50,0x85,0xC9,0xC1};
 const uint8_t cc1100_GFSK_1_2_kb[] = {
                     0x07,  // IOCFG2        GDO2 Output Pin Configuration
                     0x2E,  // IOCFG1        GDO1 Output Pin Configuration
-                    0x80,  // IOCFG0        GDO0_Pin Output Pin Configuration  TODO This means that GDO0_Pin is in RX mode
+                    0x80,  // IOCFG0        GDO0_Pin Output Pin Configuration
                     0x07,  // FIFOTHR       RX FIFO and TX FIFO Thresholds
                     0x57,  // SYNC1         Sync Word, High Byte
                     0x43,  // SYNC0         Sync Word, Low Byte
                     0x3E,  // PKTLEN        Packet Length
-                    0xDC,  // PKTCTRL1      Packet Automation Control //TODO 0x0E
+                    0xDC,  // PKTCTRL1      Packet Automation Control
                     0x45,  // PKTCTRL0      Packet Automation Control
                     0xFF,  // ADDR          Device Address
                     0x00,  // CHANNR        Channel Number
@@ -89,7 +89,7 @@ const uint8_t cc1100_GFSK_38_4_kb[] = {
                     0x57,  // SYNC1         Sync Word, High Byte
                     0x43,  // SYNC0         Sync Word, Low Byte
                     0x3E,  // PKTLEN        Packet Length
-                    0x0E,  // PKTCTRL1      Packet Automation Control
+					0xDC,  // PKTCTRL1      Packet Automation Control
                     0x45,  // PKTCTRL0      Packet Automation Control
                     0xFF,  // ADDR          Device Address
                     0x00,  // CHANNR        Channel Number
@@ -139,7 +139,7 @@ const uint8_t cc1100_GFSK_100_kb[]  = {
                     0x57,  // SYNC1         Sync Word, High Byte
                     0x43,  // SYNC0         Sync Word, Low Byte
                     0x3E,  // PKTLEN        Packet Length
-                    0x0E,  // PKTCTRL1      Packet Automation Control
+					0xDC,  // PKTCTRL1      Packet Automation Control
                     0x45,  // PKTCTRL0      Packet Automation Control
                     0xFF,  // ADDR          Device Address
                     0x00,  // CHANNR        Channel Number
@@ -189,7 +189,7 @@ const uint8_t cc1100_MSK_250_kb[] = {
                     0x57,  // SYNC1         Sync Word, High Byte
                     0x43,  // SYNC0         Sync Word, Low Byte
                     0x3E,  // PKTLEN        Packet Length
-                    0x0E,  // PKTCTRL1      Packet Automation Control
+					0xDC,  // PKTCTRL1      Packet Automation Control
                     0x45,  // PKTCTRL0      Packet Automation Control
                     0xFF,  // ADDR          Device Address
                     0x00,  // CHANNR        Channel Number
@@ -239,7 +239,7 @@ const uint8_t cc1100_MSK_500_kb[] = {
                     0x57,  // SYNC1         Sync Word, High Byte
                     0x43,  // SYNC0         Sync Word, Low Byte
                     0x3E,  // PKTLEN        Packet Length
-                    0x0E,  // PKTCTRL1      Packet Automation Control
+					0xDC,  // PKTCTRL1      Packet Automation Control
                     0x45,  // PKTCTRL0      Packet Automation Control
                     0xFF,  // ADDR          Device Address
                     0x00,  // CHANNR        Channel Number
@@ -289,7 +289,7 @@ const uint8_t cc1100_OOK_4_8_kb[] = { //In fact it's 2.4Kb/s because of the Manh
                     0x57,  // SYNC1         Sync Word, High Byte
                     0x43,  // SYNC0         Sync Word, Low Byte
                     0xFF,  // PKTLEN        Packet Length
-                    0x04,  // PKTCTRL1      Packet Automation Control
+					0xDC,  // PKTCTRL1      Packet Automation Control
                     0x05,  // PKTCTRL0      Packet Automation Control
                     0x00,  // ADDR          Device Address
                     0x00,  // CHANNR        Channel Number
@@ -336,9 +336,7 @@ const uint8_t cc1100_OOK_4_8_kb[] = { //In fact it's 2.4Kb/s because of the Manh
 
 /* RF DRIVER ----------------------------------------------------------------------------------------------------------------------*/
 
-/* High level functions ------------------------------------------------------*/
-
-//TODO pass interrupt pin too
+/*--------------------------[CC1101 Init and Settings]------------------------------*/
 uint8_t rf_begin(SPI_HandleTypeDef* hspi, MODULATION_TypeDef mode, ISMBAND_TypeDef ism_band, GPIO_TypeDef* cs_port, uint16_t cs_pin, uint16_t gdo0){
 	/**
 	 * @brief Calls all the functions needed to make the RF chip operative. This should be the first function used when
@@ -403,8 +401,10 @@ uint8_t rf_check(){
 
 	uint8_t ok = TRUE;
 	uint8_t i;
+	uint8_t version;
 	for(i=0; i<10; i++){
-		if(rf_read_register(VERSION)!=0x14)
+		version = rf_read_register(VERSION);
+		if(version!=0x14)
 			ok = FALSE;
 	}
 
@@ -514,60 +514,67 @@ void rf_set_output_power_level(int8_t dBm)
     rf_write_register(FREND0,pa);
 }
 
-float rf_set_carrier_offset(float offset, uint8_t fxtal){
+float rf_set_carrier_offset(float offset){
 	/*
 	 * @Brief Configures frequency offset register to achieve the tergeted offset.
 	 * @param offset Desired offset. Should be between -200KHz and +200KHz, depends on crystal.
 	 * @returns The actual offset
 	 */
 	//rf_write_register(FSCTRL0, offset);
-	int8_t freqoff = offset*(1<<14)/fxtal;
+	int8_t freqoff = offset*(1<<14)/CRYSTAL_FREQUENCY;
 	rf_write_register(FSCTRL0, freqoff);
-	return freqoff*(fxtal/(1<<14));
+	return freqoff*(CRYSTAL_FREQUENCY/(1<<14));
 }
 
-float rf_set_carrier_frequency(float target_freq, uint8_t fxosc){
-	/*
+float rf_set_carrier_frequency(float target_freq){
+	/* Note that this functions depends on the value of CRYSTAL_FREQUENCY_M.
 	 * @param Frequency targeted, in MHz. Positive number. Note that the actual frequency may vary.
-	 * @fxosc Oscillator frequency, in MHz
 	 */
-	if(target_freq>928) target_freq = 928;
-
-	uint32_t freq = target_freq*65536/fxosc;
+	target_freq = target_freq*1000000;
+	float freqf = target_freq*65536.0/(float)CRYSTAL_FREQUENCY_M;
+	uint32_t freq = (uint32_t)freqf;
 	freq = freq&0x00FFFFFF;
 	rf_write_register(FREQ0, freq);
 	rf_write_register(FREQ1, (freq>>8));
 	rf_write_register(FREQ2, (freq>>16));
-	float t = (freq*fxosc)/65536;
+	float t = ((float)freq*(float)CRYSTAL_FREQUENCY_M)/65536.0;
+	printf("%#02x : 0x10 \n\r", rf_read_register(FREQ2));
+	printf("%#02x : 0xB0 \n\r", rf_read_register(FREQ1));
+	printf("%#02x : 0x71 \n\r", rf_read_register(FREQ0));
 	return t;
 }
 
-float rf_set_channel_spacing(float cspacing, uint8_t fxosc){
+float rf_set_channel_spacing(float cspacing){
 	/*
 	 * @brief Configures channel spacing registers to achieve the closer spacing possible to the target spacing
+	 * Note that this functions depends on the value of CRYSTAL_FREQUENCY_M.
 	 * @param cspacing target spacing, in KHz. Positive number.
 	 * @Returns The actual configured spacing, in KHz
 	 */
 	uint8_t chanspc_e = 0;
-	uint16_t chanspc_m = 0;
+	uint8_t chanspc_m = 0;
+	float tmp;
 
-	chanspc_m = cspacing*(1<<18)/fxosc/(1<<chanspc_e)-256;
-	while(chanspc_m>256 && chanspc_e<4){
+	tmp = cspacing*((1<<18)/((float)CRYSTAL_FREQUENCY*(1<<chanspc_e)))-256.0;
+	while(tmp>256 && chanspc_e<4){
 		chanspc_e++;
-		chanspc_m = cspacing*(1<<18)/fxosc/(1<<chanspc_e)-256;
+		tmp = cspacing*((1<<18)/((float)CRYSTAL_FREQUENCY*(1<<chanspc_e)))-256.0;
 	}
-	rf_write_register(MDMCFG0, (uint8_t)chanspc_m);
+	chanspc_m = (uint8_t)tmp;
+	rf_write_register(MDMCFG0, chanspc_m);
 
 	uint8_t mdmcfg1 = rf_read_register(MDMCFG1);
 	mdmcfg1 &= 0xFC;
 	mdmcfg1 |= (chanspc_e & 0x2);
 	rf_write_register(MDMCFG1, mdmcfg1);
 
-	return (chanspc_m+256)*fxosc*(1<<chanspc_e)/(1<<18);
+	cspacing = ((float)CRYSTAL_FREQUENCY/(1<<18))*((float)chanspc_m+256.0)*(1<<chanspc_e);
+	return cspacing;
 }
 
 
-uint8_t sidle(){
+/*----------------------------[CC1101 States]----------------------------------------------*/
+void sidle(){
 	/**
 	 * @brief Set RF chip to idle state
 	 */
@@ -577,14 +584,95 @@ uint8_t sidle(){
 
     marcstate = 0xFF;                     //set unknown/dummy state value
 
-    while(marcstate != IDLE)              //0x01 = sidle
+    while(marcstate != IDLE)
     {
-        marcstate = (rf_read_register(MARCSTATE) & 0x1F); //read out state of cc1100 to be sure in RX
+        marcstate = (rf_read_register(MARCSTATE) & 0x1F);
     }
 
-    return TRUE;
 }
 
+void rf_receive(){
+	/*
+	 * @brief Set RF chip to receive state (RX)
+	 */
+	rf_write_strobe(SRX);
+	uint8_t marcstate = 0xFF;
+	while(marcstate != RX){
+		marcstate = (rf_read_register(MARCSTATE)); //read out state of cc1100 to be sure in RX
+	}
+
+}
+
+void rf_power_down(){
+    sidle();
+    rf_write_strobe(SPWD);               // CC1100 Power Down
+}
+
+void rf_wakeup(void){
+	/*
+	 * @brief Wakes up the c1101 from power down.
+	 */
+    HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
+    HAL_Delay(10);
+    HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
+    HAL_Delay(10);
+    //TODO rf_receive();                            // go to RX Mode
+}
+
+uint8_t rf_get_settings(){
+   static uint8_t settings[CFG_REGISTER];
+   rf_read_data(0, settings, CFG_REGISTER);
+   return settings;
+}
+
+//TODO check what is going on
+void rf_wor_enable(){
+	/*
+	 * @brief enables WOR Mode  EVENT0 ~1890ms; rx_timeout ~235ms
+	 */
+	/*
+		EVENT1 = WORCTRL[6:4] -> Datasheet page 88
+		EVENT0 = (750/Xtal)*(WOREVT1<<8+WOREVT0)*2^(5*WOR_RES) = (750/26Meg)*65407*2^(5*0) = 1.89s
+							(WOR_RES=0;RX_TIME=0)               -> Datasheet page 80
+	i.E RX_TIMEOUT = EVENT0*       (3.6038)      *26/26Meg = 235.8ms
+							(WOR_RES=0;RX_TIME=1)               -> Datasheet page 80
+	i.E.RX_TIMEOUT = EVENT0*       (1.8029)      *26/26Meg = 117.9ms
+	*/
+    sidle();
+
+    rf_write_register(MCSM0, 0x18);    //FS Autocalibration
+    rf_write_register(MCSM2, 0x01);    //MCSM2.RX_TIME = 1b
+
+    // configure EVENT0 time
+    rf_write_register(WOREVT1, 0xFF);  //High byte Event0 timeout
+    rf_write_register(WOREVT0, 0x7F);  //Low byte Event0 timeout
+
+    // configure EVENT1 time
+    rf_write_register(WORCTRL, 0x78);  //WOR_RES=0b; tEVENT1=0111b=48d -> 48*(750/26MHz)= 1.385ms
+
+    rf_write_strobe(SFRX);             //flush RX buffer
+    rf_write_strobe(SWORRST);          //resets the WOR timer to the programmed Event 1
+    rf_write_strobe(SWOR);             //put the radio in WOR mode when CSn is released
+
+    HAL_Delay(100); //Really necessary?
+}
+
+void rf_wor_disable(){
+	sidle();                            //exit WOR Mode
+	rf_write_register(MCSM2, 0x07); //stay in RX. No RX timeout
+}
+
+void rf_wor_reset(){
+    sidle();                            //go to IDLE
+    rf_write_register(MCSM2, 0x01);    //MCSM2.RX_TIME = 1b
+    rf_write_strobe(SFRX);             //flush RX buffer
+    rf_write_strobe(SWORRST);          //resets the WOR timer to the programmed Event 1
+    rf_write_strobe(SWOR);             //put the radio in WOR mode when CSn is released
+
+    HAL_Delay(100); //Really necessary?
+}
+
+/*----------------------------[CC1101 Data Flow]----------------------------------------------*/
 
 uint8_t _keep_transmiting_data(uint8_t* data, int len){
 	/**
@@ -696,6 +784,7 @@ uint8_t  _keep_receiving_data(uint8_t* data, int len){
 	uint8_t last_chunk = len%DATA_CHUNK_SIZE;
 	FIFO_THRESHOLD_FLAG = 0;
 	while(len_received <len-last_chunk){
+		//printf("%d\n\r", rf_read_register(PKTSTATUS)&1);
 		if(FIFO_THRESHOLD_FLAG){ //if buffer is half empty
 			FIFO_THRESHOLD_FLAG = 0;
 			rf_read_data(RXFIFO, &data[len_received], DATA_CHUNK_SIZE);
@@ -907,10 +996,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if (GPIO_Pin == GPIO_PIN_15)
 		TX_RX_BEGAN = 1;
 	*/
-	//if(GPIO_Pin == GDO0_Pin){
+	if(GPIO_Pin == GDO0_Pin){
 		FIFO_THRESHOLD_FLAG = 1;
 		//HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
-	//}
+	}
 	/*
 	if(GPIO_Pin == CS_Pin){ //User B1 Button (the blue one on F446ZE)
 		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);

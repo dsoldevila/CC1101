@@ -29,9 +29,6 @@
 #define TRUE 1
 #define FALSE 0
 
-/*---------------------------[Pins]------------------------------------------*/
-#define GDO2 GPIO_PIN_12
-
 /*---------------------------[DATA]------------------------------------------*/
 #define FIFO_SIZE 64  //Size of TX and RX FIFO buffers
 #define FIXED_LENGTH_LIMIT 255 //For packets with length>255, infinite packet length mode must be used
@@ -146,9 +143,12 @@
 //--------------------------[END status register]-------------------------------
 
 /*----------------------[CC1100 - misc]---------------------------------------*/
-#define CRYSTAL_FREQUENCY         26000000
+#define CRYSTAL_FREQUENCY 26000
+#define CRYSTAL_FREQUENCY_M CRYSTAL_FREQUENCY/1000
 #define CFG_REGISTER              0x2F  //47 registers
-#define FIFOBUFFER                0x42  //size of Fifo Buffer
+#define MAX_CHANNEL_SPACING (0xFF+256)*CRYSTAL_FREQUENCY*(1<<3)/(1<<18)
+#define MIN_CHANNEL_SPACING (0x0+256)*CRYSTAL_FREQUENCY/(1<<18) //Min value possible, but min legal value?
+
 #define RSSI_OFFSET_868MHZ        0x4E  //dec = 74
 #define TX_RETRIES_MAX            0x05  //tx_retries_max
 #define ACK_TIMEOUT                200  //ACK timeout in ms
@@ -208,7 +208,7 @@ typedef enum{
 
 /* Private function prototypes -----------------------------------------------*/
 
-/* SPI ----------------*/
+/* SPI data flow-------------*/
 void rf_write_strobe(uint8_t strobe);
 uint8_t rf_read_register(uint8_t reg);
 void rf_write_register(uint8_t reg, uint8_t data);
@@ -218,7 +218,7 @@ HAL_StatusTypeDef __spi_write(uint8_t* addr, uint8_t *pData, uint16_t size);
 HAL_StatusTypeDef __spi_read(uint8_t* addr, uint8_t *pData, uint16_t size);
 
 
-/* Driver -------------*/
+/* Driver init-------------*/
 uint8_t rf_check();
 void rf_reset();
 uint8_t rf_begin(SPI_HandleTypeDef* hspi, MODULATION_TypeDef mode, ISMBAND_TypeDef ism_band,  GPIO_TypeDef* cs_port, uint16_t cs_pin, uint16_t gdo0_pin);
@@ -232,19 +232,20 @@ void rf_set_syncword(uint16_t syncword);
 //packet control
 void rf_set_addr(uint8_t addr);
 //FSCTRL1 – Frequency Synthesizer Control??
-float rf_set_carrier_offset(float offset, uint8_t fxtal);
-float rf_set_carrier_frequency(float target_freq, uint8_t fxosc);
-float rf_set_channel_spacing(float cpsacing, uint8_t fxosc);
+float rf_set_carrier_offset(float offset);
+float rf_set_carrier_frequency(float target_freq);
+float rf_set_channel_spacing(float cpsacing);
 
 
 /*State --------------*/
-uint8_t sidle();
-uint8_t power_down();
-uint8_t wakeup();
-uint8_t show_settings();
-uint8_t wor_enable();
-uint8_t wor_disable();
-uint8_t wor_reset();
+void sidle();
+void rf_power_down();
+void rf_wakeup();
+uint8_t rf_get_settings();
+void rf_wor_enable();
+void rf_wor_disable();
+void rf_wor_reset();
+
 
 
 /* Comm -------------*/
@@ -262,10 +263,7 @@ int _write(int file,char *ptr, int len);
 
 void init_led();
 
-//sent ACK
-//check if packet received
-//get payload
-//check acknowledge
+
 
 
 
