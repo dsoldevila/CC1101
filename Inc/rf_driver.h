@@ -3,7 +3,7 @@
  *
  *  Created on: 29 mar. 2019
  *      Author: dsoldevila
- *      This code is based on the code made by SpaceTeddy (https://github.com/SpaceTeddy/CC1101)
+ *      The most part of the #defines were written by SpaceTeddy (https://github.com/SpaceTeddy/CC1101)
  */
 
 #ifndef RF_DRIVER_H_
@@ -32,9 +32,8 @@
 /*---------------------------[DATA]------------------------------------------*/
 #define FIFO_SIZE 64  //Size of TX and RX FIFO buffers
 #define FIXED_LENGTH_LIMIT 255 //For packets with length>255, infinite packet length mode must be used
-#define HEADER_SIZE 1
-#define INITIAL_DATA_SIZE (FIFO_SIZE - HEADER_SIZE) //64-1(header byte)
-#define DATA_CHUNK_SIZE 32
+#define DATA_CHUNK_SIZE 32   //The data is read from and write to the buffer in chunks of 32
+#define BUFFER_SIZE (1<<16) //Change this to be able to receive longer (or shorter) frames. _get_frame_length should be modified too.
 
 /*---------------------------[CC1100 - R/W offsets]---------------------------*/
 #define WRITE(ADDR) ADDR
@@ -205,6 +204,12 @@ typedef enum{
 	MHz915,
 }ISMBAND_TypeDef;
 
+typedef enum{
+	TIMEOUT = -1,
+	FRAME_BAD = 0, //CRC bad when receiving
+	FRAME_OK = 1, //CRC OK when receiving, frame transmited when transmitting
+}FRAMESTATUS_TypeDef;
+
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -235,12 +240,15 @@ void rf_set_addr(uint8_t addr);
 float rf_set_carrier_offset(float offset);
 float rf_set_carrier_frequency(float target_freq);
 float rf_set_channel_spacing(float cpsacing);
+void rf_set_preamble(uint8_t nbytes);
+void rf_set_preamble_threshold(uint8_t nbytes);
 
 
 /*State --------------*/
-void sidle();
+void rf_sidle();
 void rf_power_down();
 void rf_wakeup();
+void rf_receive();
 uint8_t rf_get_settings();
 void rf_wor_enable();
 void rf_wor_disable();
@@ -249,12 +257,14 @@ void rf_wor_reset();
 
 
 /* Comm -------------*/
-uint16_t _get_frame_size(uint8_t* header, uint8_t data_len_loc);
+uint16_t _get_frame_size(uint8_t* header, uint8_t data_len_loc, uint8_t data_len_size);
 uint8_t _keep_transmiting_data(uint8_t* data, int len);
-uint8_t send_frame(uint8_t* frame, int len);
+FRAMESTATUS_TypeDef send_frame(uint8_t* frame, int len);
 uint8_t  _keep_receiving_data(uint8_t* data, int len);
-uint8_t* receive_frame(uint8_t header_len, uint8_t data_len_loc);
-uint8_t polling(uint8_t reg, uint8_t size);
+FRAMESTATUS_TypeDef receive_frame(uint8_t* frame_buffer, uint16_t* len, uint8_t data_len_loc, uint8_t data_len_size, uint8_t* lqi, uint8_t* rssi);
+uint8_t polling_while_lower(uint8_t reg, uint8_t size);
+uint8_t polling_while_bigger(uint8_t reg, uint8_t size);
+uint8_t rf_incoming_packet();
 
 /* Misc -------------*/
 void init_serial(UART_HandleTypeDef* huart);
