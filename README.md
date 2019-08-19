@@ -2,7 +2,7 @@
 
 **This project is not finnished yet**
 
-This driver has been tested with **STM32F446ZETx** (NUCLEO) and **STM32F446RETx** (OBC), but, as it has been said, it should be compatible with any STM32 board and should be **easily portable to any board** with an SPI interface.
+This driver has been tested with **STM32F446ZETx** (NUCLEO) and **STM32F446RETx** (OBC), but it should be compatible with any STM32 board and should be **easily portable to any board** with an SPI interface.
 
 **Based on the work of https://github.com/SpaceTeddy/CC1101**
 
