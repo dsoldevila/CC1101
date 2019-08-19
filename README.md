@@ -13,14 +13,14 @@ data flow between the board and the CC1101 transceiver. The third one is compoun
 
 
 
-## Directory tree:**
+## Directory tree
 * **Inc/Src** - include the not-finnished driver for the CC1101.
 * **Nucleo/OBC** - include the required files for the respective boards, which were built by STM32CubeMX, and the main functions.
 * **Builders** - includes System Workbench for STM32 project files for both boards.
 * **GNURadio** - includes GNURadio flow charts used to capture and decode the radio signal (ASK mod) with an RTL-SDR and some output data. It was used for debuging the transmission of data.
 
 ## Future Work
-This project is not finnished yet and won't be in the short term as I no longer have neither the boards or the CC1101 to do so, but as I don't like to leave things have done I'm seeing myself retaking this project. This time but with an Arduino and a Freescale board.
+This project is not finnished yet and won't be in the short term as I no longer have neither the boards or the CC1101 to do so, but as I don't like to leave things half done, I'm seeing myself retaking this project.
 
 **Feel free to colaborate and to send me a message for any doubts**
 
