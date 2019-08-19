@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.11'?>
+<?grc format='1' created='3.7.13'?>
 <flow_graph>
   <timestamp>Sat Apr 27 18:25:55 2019</timestamp>
   <block>
@@ -73,12 +73,20 @@
       <value>True</value>
     </param>
     <param>
+      <key>sizing_mode</key>
+      <value>fixed</value>
+    </param>
+    <param>
       <key>thread_safe_setters</key>
       <value></value>
     </param>
     <param>
       <key>title</key>
       <value></value>
+    </param>
+    <param>
+      <key>placement</key>
+      <value>(0,0)</value>
     </param>
   </block>
   <block>
@@ -128,7 +136,34 @@
     </param>
     <param>
       <key>id</key>
-      <value>centre_freq</value>
+      <value>centre_freq1</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>434140e3</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(808, 20)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>centre_freq2</value>
     </param>
     <param>
       <key>value</key>
@@ -252,11 +287,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>file</key>
-      <value>/media/david/Disco Local/Git/RF_driver/GNURadio/hexa07_raw.data</value>
+      <value>/home/osboxes/Desktop/RF_driver/GNURadio/Data/frame20_raw.data</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -281,6 +316,105 @@
     <param>
       <key>vlen</key>
       <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>qtgui_sink_x</key>
+    <param>
+      <key>bw</key>
+      <value>samp_rate</value>
+    </param>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>fc</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>freqchangevar</key>
+      <value>None</value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>fftsize</key>
+      <value>1024</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(728, 148)</value>
+    </param>
+    <param>
+      <key>gui_hint</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>qtgui_sink_x_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>name</key>
+      <value>""</value>
+    </param>
+    <param>
+      <key>plotconst</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>plotfreq</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>plottime</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>plotwaterfall</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>showports</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>showrf</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>rate</key>
+      <value>10</value>
+    </param>
+    <param>
+      <key>wintype</key>
+      <value>firdes.WIN_BLACKMAN_hARRIS</value>
     </param>
   </block>
   <block>
@@ -682,7 +816,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -962,7 +1096,7 @@
     </param>
     <param>
       <key>srate</key>
-      <value>samp_rate</value>
+      <value>baud_rate</value>
     </param>
     <param>
       <key>stemplot</key>
@@ -1045,7 +1179,7 @@
     </param>
     <param>
       <key>freq0</key>
-      <value>centre_freq</value>
+      <value>centre_freq2</value>
     </param>
     <param>
       <key>gain_mode0</key>
@@ -2317,11 +2451,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 84)</value>
+      <value>(96, 164)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2439,6 +2573,12 @@
   <connection>
     <source_block_id>rtlsdr_source_0</source_block_id>
     <sink_block_id>blocks_complex_to_mag_squared_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>rtlsdr_source_0</source_block_id>
+    <sink_block_id>qtgui_sink_x_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.11'?>
+<?grc format='1' created='3.7.13'?>
 <flow_graph>
   <timestamp>Sat Apr 27 18:25:55 2019</timestamp>
   <block>
@@ -73,12 +73,20 @@
       <value>True</value>
     </param>
     <param>
+      <key>sizing_mode</key>
+      <value>fixed</value>
+    </param>
+    <param>
       <key>thread_safe_setters</key>
       <value></value>
     </param>
     <param>
       <key>title</key>
       <value></value>
+    </param>
+    <param>
+      <key>placement</key>
+      <value>(0,0)</value>
     </param>
   </block>
   <block>
@@ -267,7 +275,7 @@
     </param>
     <param>
       <key>file</key>
-      <value>/media/david/Disco Local/Git/RF_driver/GNURadio/hexa07_clean_data</value>
+      <value>/home/osboxes/Desktop/RF_driver/GNURadio/Data/frame20_clean.data</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -297,6 +305,10 @@
   <block>
     <key>blocks_file_source</key>
     <param>
+      <key>begin_tag</key>
+      <value>pmt.PMT_NIL</value>
+    </param>
+    <param>
       <key>alias</key>
       <value></value>
     </param>
@@ -314,7 +326,7 @@
     </param>
     <param>
       <key>file</key>
-      <value>/media/david/Disco Local/Git/RF_driver/GNURadio/hexa07_raw.data</value>
+      <value>/home/osboxes/Desktop/RF_driver/GNURadio/Data/frame20_raw.data</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -342,7 +354,7 @@
     </param>
     <param>
       <key>repeat</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
       <key>vlen</key>
@@ -479,7 +491,7 @@
     </param>
     <param>
       <key>high</key>
-      <value>0.8</value>
+      <value>0.7</value>
     </param>
     <param>
       <key>id</key>
@@ -491,7 +503,7 @@
     </param>
     <param>
       <key>low</key>
-      <value>0.4</value>
+      <value>0.6</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -905,7 +917,7 @@
     </param>
     <param>
       <key>update_time</key>
-      <value>1</value>
+      <value>0.1</value>
     </param>
     <param>
       <key>ylabel</key>
@@ -1272,7 +1284,7 @@
     </param>
     <param>
       <key>update_time</key>
-      <value>1</value>
+      <value>0.1</value>
     </param>
     <param>
       <key>ylabel</key>

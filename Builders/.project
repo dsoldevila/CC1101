@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>Builders</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>Nucleo/Inc</name>
+			<type>2</type>
+			<location>/home/david/Git/RF/Nucleo/Inc</location>
+		</link>
+		<link>
+			<name>Nucleo/Src</name>
+			<type>2</type>
+			<location>/home/david/Git/RF/Nucleo/Src</location>
+		</link>
+	</linkedResources>
+</projectDescription>
