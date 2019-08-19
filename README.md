@@ -22,7 +22,8 @@ data flow between the board and the CC1101 transceiver. The third one is compoun
 ## Future Work
 This project is not finnished yet and won't be in the short term as I no longer have neither the boards or the CC1101 to do so, but as I don't like to leave things half done, I'm seeing myself retaking this project.
 
-**Feel free to colaborate and to send me a message for any doubts**
+### Contributing 
+Feel free to colaborate and to send me a message for any doubts. If you have never contributed to any respository, I recommend to take a look on this [website](https://www.firsttimersonly.com/)
 
 ## Other notes
 The commits are not explanatory at all as I worked on a different repo...
